@@ -59,12 +59,11 @@ int main(void)
     pwmGenerator.Enable();
     while (1)
     {
-        console.Print("Normal  \b\b\b\b\b\b\b\b");
-        system.Delay(5);
+        console.Print("Normal\n");
+        system.Delay(1);
         pwmGenerator.Invert(true);
-        PWMOutputInvert(PWM0_BASE, PWM_OUT_0_BIT, true);
-        console.Print("Inverted\b\b\b\b\b\b\b\b");
-        system.Delay(5);
+        console.Print("Inverted\n");
+        system.Delay(1);
         pwmGenerator.Invert(false);
     }
 }
