@@ -32,14 +32,14 @@ int MotorController::Start(float target, bool flag)
     pwmGenerator.Invert(flag);
     GetAntallPulser();
     GetElapsedMilliseconds();
-    for (uint32_t count = 0; count < 100; count++)
+    for (uint32_t count = 0; count < 20; count++)
     {
         float error = target - GetAntallPulser();
         float dt = GetElapsedMilliseconds();
         float spenningUt = pid.Input(error, dt);
         SetSpenningUt(spenningUt);
         // console.Print("% 4d: v=%.3f, e=%.3f, dt=%.3f \n", (int) count, spenningUt, error, dt);
-        system.Sleep(199);
+        system.Sleep(100);
     }
     SetSpenningUt(0.0);
     return 0;
