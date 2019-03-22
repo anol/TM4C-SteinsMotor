@@ -8,6 +8,8 @@
 #include "driverlib/uart.h"
 #include <System.h>
 #include <Console.h>
+#include <PidController.h>
+#include <MotorController.h>
 #include <PwmGenerator.h>
 
 //*****************************************************************************
@@ -46,24 +48,14 @@ int main(void)
 {
     System system;
     Console console;
-    PwmGenerator pwmGenerator;
-    pwmGenerator.Initialize();
+    MotorController motor(system, console);
     console.Initialize();
-    console.Print("PWM ->\n");
-    console.Print("  Module: PWM0\n");
-    console.Print("  Pin: PD0\n");
-    console.Print("  Configured Duty Cycle: 25%%\n");
-    console.Print("  Inverted Duty Cycle: 75%%\n");
-    console.Print("  Features: PWM output inversion every 5 seconds.\n\n");
-    console.Print("Generating PWM on PWM0 (PD0) -> State = ");
-    pwmGenerator.Enable();
+    console.Print("Steins motor\n");
     while (1)
     {
         console.Print("Normal\n");
-        system.Delay(1);
-        pwmGenerator.Invert(true);
+        motor.Start(10.0, true);
         console.Print("Inverted\n");
-        system.Delay(1);
-        pwmGenerator.Invert(false);
+        motor.Start(10.0, false);
     }
 }

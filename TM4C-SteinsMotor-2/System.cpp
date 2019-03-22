@@ -28,3 +28,9 @@ void System::Delay(int seconds){
     // delay.  The function delay (in cycles) = 3 * parameter.
     SysCtlDelay((SysCtlClockGet() * seconds) / 3);
 }
+
+void System::Sleep(int milliseconds){
+    // This function provides a means of generating a constant length
+    // delay.  The function delay (in cycles) = 3 * parameter.
+    SysCtlDelay((SysCtlClockGet() * milliseconds) / 3000);
+}

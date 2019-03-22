@@ -14,6 +14,7 @@ public:
     System();
     virtual ~System();
     void Delay(int seconds);
+    void Sleep(int milliseconds);
 };
 
 #endif /* SYSTEM_H_ */
