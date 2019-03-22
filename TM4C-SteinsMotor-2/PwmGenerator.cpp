@@ -35,15 +35,18 @@ void PwmGenerator::Initialize()
 
 void PwmGenerator::Invert(bool invert)
 {
-    PWMOutputInvert(PWM0_BASE, PWM_OUT_0_BIT, invert);
+    PWMOutputInvert(PWM1_BASE, PWM_OUT_6_BIT|PWM_OUT_7_BIT, invert);
 }
 
 void PwmGenerator::SetPulseWidth(int percent)
 {
  //   uint32_t ui32Width = PWMGenPeriodGet(PWM0_BASE, PWM_GEN_0) * percent / 100;
  //   PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, ui32Width);
-    uint32_t ui32Width = PWMGenPeriodGet(PWM1_BASE, PWM_GEN_2) * percent / 100;
-    PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, ui32Width);
+    uint32_t ui32Width = PWMGenPeriodGet(PWM1_BASE, PWM_GEN_3) * percent / 100;
+    PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, ui32Width);
+    percent = 100 - percent;
+    ui32Width = PWMGenPeriodGet(PWM1_BASE, PWM_GEN_3) * percent / 100;
+    PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7, ui32Width);
 }
 
 // GPIO_PB6_M0PWM0, SYSCTL_PERIPH_PWM0, SYSCTL_PERIPH_GPIOB
@@ -70,6 +73,7 @@ void PwmGenerator::Enable()
      * Motion Control Module 1 PWM 5.
      * This signal is controlled by Module 1 PWM Generator 2.
      */
+    /*
     PmEnable(
             SYSCTL_PERIPH_PWM1,
             SYSCTL_PERIPH_GPIOF,
@@ -80,6 +84,30 @@ void PwmGenerator::Enable()
             PWM_GEN_2,
             PWM_OUT_5_BIT
             );
+            */
+   /*
+    PmEnable(
+            SYSCTL_PERIPH_PWM1,
+            SYSCTL_PERIPH_GPIOF,
+            GPIO_PF2_M1PWM6,
+            GPIO_PORTF_BASE,
+            GPIO_PIN_2,
+            PWM1_BASE,
+            PWM_GEN_3,
+            PWM_OUT_6_BIT
+            );
+            */
+    PmEnable(
+            SYSCTL_PERIPH_PWM1,
+            SYSCTL_PERIPH_GPIOF,
+            GPIO_PF2_M1PWM6,
+            GPIO_PORTF_BASE,
+            GPIO_PIN_2 ,
+            PWM1_BASE,
+            PWM_GEN_3,
+            PWM_OUT_6_BIT | PWM_OUT_7_BIT
+            );
+
 }
 
 void PwmGenerator::PmEnable(
@@ -105,9 +133,19 @@ void PwmGenerator::PmEnable(
     // This is necessary if your part supports GPIO pin function muxing.
     // Consult the data sheet to see which functions are allocated per pin.
     GPIOPinConfigure (gpio_pwm_pin); //GPIO_PB6_M0PWM0);
+
+
+    GPIOPinConfigure (GPIO_PF3_M1PWM7); //GPIO_PB6_M0PWM0);
+
+
     // Configure the PWM function for this pin.
     // Consult the data sheet to see which functions are allocated per pin.
     GPIOPinTypePWM(gpio_base, gpio_pin); //GPIO_PORTB_BASE, GPIO_PIN_6);
+
+
+    GPIOPinTypePWM(gpio_base, GPIO_PIN_3); //GPIO_PORTB_BASE, GPIO_PIN_6);
+
+
     // Configure the PWM0 to count up/down without synchronization.
     PWMGenConfigure(pwm_base, pwm_gen, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
     // Set the PWM period to 250Hz.  To calculate the appropriate parameter
@@ -117,7 +155,7 @@ void PwmGenerator::PmEnable(
     // In this case you get: (1 / 250Hz) * 16MHz = 64000 cycles.  Note that
     // the maximum period you can set is 2^16.
     PWMGenPeriodSet(pwm_base, pwm_gen, 64000);
-    SetPulseWidth(25);
+    SetPulseWidth(10);
     // Enable the PWM0 Bit0 (PD0) output signal.
     PWMOutputState(pwm_base, pwm_out_bit, true);
     // Enable the PWM generator block.
