@@ -8,6 +8,9 @@
 #ifndef MOTORCONTROLLER_H_
 #define MOTORCONTROLLER_H_
 
+#include <PwmGenerator.h>
+#include <PulsCounter.h>
+
 class MotorController
 {
 public:
@@ -15,12 +18,15 @@ public:
     virtual ~MotorController();
     int Start(float target, bool flag);
     float GetElapsedMilliseconds();
-    float GetAntallPulser();
+    uint32_t GetAntallPulser();
     void SetSpenningUt(float spenning);
 private:
+    uint32_t old_count;
     PidController pid;
     System& system;
     Console& console;
+    PwmGenerator pwmGenerator;
+    PulsCounter pulsCounter;
 };
 
 #endif /* MOTORCONTROLLER_H_ */

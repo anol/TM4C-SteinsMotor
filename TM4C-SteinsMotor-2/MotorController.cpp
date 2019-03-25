@@ -14,7 +14,7 @@
 #include <MotorController.h>
 
 MotorController::MotorController(System& system, Console& console) :
-        system(system), console(console)
+        pid(), system(system), console(console), pwmGenerator("Drive"), pulsCounter("PB6")
 {
 
 }
@@ -26,7 +26,7 @@ MotorController::~MotorController()
 
 int MotorController::Start(float target, bool flag)
 {
-    PwmGenerator pwmGenerator("Drive");
+    pulsCounter.Initialize();
     pwmGenerator.Initialize();
     pwmGenerator.Enable();
     pwmGenerator.Invert(flag);
@@ -51,9 +51,11 @@ float MotorController::GetElapsedMilliseconds()
     return dt;
 }
 
-float MotorController::GetAntallPulser()
+uint32_t MotorController::GetAntallPulser()
 {
-    float antall = 1;
+    uint32_t new_count = pulsCounter.GetCount();
+    uint32_t antall = new_count - old_count;
+    old_count = new_count;
     return antall;
 }
 
