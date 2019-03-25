@@ -26,7 +26,7 @@ MotorController::~MotorController()
 
 int MotorController::Start(float target, bool flag)
 {
-    PwmGenerator pwmGenerator;
+    PwmGenerator pwmGenerator("Drive");
     pwmGenerator.Initialize();
     pwmGenerator.Enable();
     pwmGenerator.Invert(flag);

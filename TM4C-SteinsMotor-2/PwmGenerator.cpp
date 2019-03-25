@@ -14,17 +14,50 @@
 #include "driverlib/sysctl.h"
 #include <PwmGenerator.h>
 
-PwmGenerator::PwmGenerator()
+class PwmConfiguration
 {
-    // TODO Auto-generated constructor stub
+public:
+    PwmConfiguration(std::string tag, uint32_t periph_pwm, uint32_t periph_gpio, uint32_t gpio_pwm_pin, uint32_t gpio_base, uint32_t gpio_pin,
+                     uint32_t pwm_base, uint32_t pwm_gen, uint32_t pwm_out_bit) :
+            m_tag(tag), m_periph_pwm(periph_pwm), m_periph_gpio(periph_gpio), m_gpio_pwm_pin(gpio_pwm_pin), m_gpio_base(gpio_base), m_gpio_pin(
+                    gpio_pin), m_pwm_base(pwm_base), m_pwm_gen(pwm_gen), m_pwm_out_bit(pwm_out_bit)
+    {
 
+    }
+    std::string m_tag;
+    uint32_t m_periph_pwm;
+    uint32_t m_periph_gpio;
+    uint32_t m_gpio_pwm_pin;
+    uint32_t m_gpio_base;
+    uint32_t m_gpio_pin;
+    uint32_t m_pwm_base;
+    uint32_t m_pwm_gen;
+    uint32_t m_pwm_out_bit;
+};
+
+const PwmConfiguration Configurations[] =
+{
+{ "Red", SYSCTL_PERIPH_PWM1, SYSCTL_PERIPH_GPIOF, GPIO_PF1_M1PWM5, GPIO_PORTF_BASE, GPIO_PIN_1, PWM1_BASE, PWM_GEN_2, PWM_OUT_5_BIT },
+  { "Blue", SYSCTL_PERIPH_PWM1, SYSCTL_PERIPH_GPIOF, GPIO_PF2_M1PWM6, GPIO_PORTF_BASE, GPIO_PIN_2, PWM1_BASE, PWM_GEN_3, PWM_OUT_6_BIT },
+  { "Green", SYSCTL_PERIPH_PWM1, SYSCTL_PERIPH_GPIOF, GPIO_PF3_M1PWM7, GPIO_PORTF_BASE, GPIO_PIN_3, PWM1_BASE, PWM_GEN_3, PWM_OUT_7_BIT },
+  { "Drive", SYSCTL_PERIPH_PWM1, SYSCTL_PERIPH_GPIOD, GPIO_PD0_M1PWM0, GPIO_PORTD_BASE, GPIO_PIN_0, PWM1_BASE, PWM_GEN_0, PWM_OUT_0_BIT } };
+
+const PwmConfiguration* p_conf = 0;
+
+PwmGenerator::PwmGenerator(const std::string& name)
+{
+    for (int gpc = 0; gpc < sizeof(Configurations) / sizeof(PwmConfiguration); gpc++)
+    {
+        if (0 == name.compare(Configurations[gpc].m_tag))
+        {
+            p_conf = &Configurations[gpc];
+        }
+    }
 }
-
 PwmGenerator::~PwmGenerator()
 {
     // TODO Auto-generated destructor stub
 }
-
 void PwmGenerator::Initialize()
 {
     // Set the clocking to run directly from the external crystal/oscillator.
@@ -32,132 +65,24 @@ void PwmGenerator::Initialize()
     // Set the PWM clock to the system clock.
     SysCtlPWMClockSet (SYSCTL_PWMDIV_1);
 }
-
 void PwmGenerator::Invert(bool invert)
 {
-    PWMOutputInvert(PWM1_BASE, PWM_OUT_6_BIT|PWM_OUT_7_BIT, invert);
+    PWMOutputInvert(p_conf->m_pwm_base, p_conf->m_pwm_out_bit, invert);
 }
-
 void PwmGenerator::SetPulseWidth(int percent)
 {
- //   uint32_t ui32Width = PWMGenPeriodGet(PWM0_BASE, PWM_GEN_0) * percent / 100;
- //   PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, ui32Width);
-    uint32_t ui32Width = PWMGenPeriodGet(PWM1_BASE, PWM_GEN_3) * percent / 100;
-    PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, ui32Width);
-    percent = 100 - percent;
-    ui32Width = PWMGenPeriodGet(PWM1_BASE, PWM_GEN_3) * percent / 100;
-    PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7, ui32Width);
+    uint32_t ui32Width = PWMGenPeriodGet(p_conf->m_pwm_base, p_conf->m_pwm_gen) * percent / 100;
+    PWMPulseWidthSet(p_conf->m_pwm_base, p_conf->m_pwm_out_bit, ui32Width);
 }
-
-// GPIO_PB6_M0PWM0, SYSCTL_PERIPH_PWM0, SYSCTL_PERIPH_GPIOB
-// GPIO_PF0_M1PWM4, SYSCTL_PERIPH_PWM1, SYSCTL_PERIPH_GPIOF
-// GPIO_PF1_M1PWM5
-// GPIO_PF2_M1PWM6
-
 void PwmGenerator::Enable()
 {
-    /*
-    PmEnable(
-            SYSCTL_PERIPH_PWM0,
-            SYSCTL_PERIPH_GPIOB,
-            GPIO_PB6_M0PWM0,
-            GPIO_PORTB_BASE,
-            GPIO_PIN_6,
-            PWM0_BASE,
-            PWM_GEN_0,
-            PWM_OUT_0_BIT
-            );
-            */
-    /*
-     * M1PWM5-PF1
-     * Motion Control Module 1 PWM 5.
-     * This signal is controlled by Module 1 PWM Generator 2.
-     */
-    /*
-    PmEnable(
-            SYSCTL_PERIPH_PWM1,
-            SYSCTL_PERIPH_GPIOF,
-            GPIO_PF1_M1PWM5,
-            GPIO_PORTF_BASE,
-            GPIO_PIN_1,
-            PWM1_BASE,
-            PWM_GEN_2,
-            PWM_OUT_5_BIT
-            );
-            */
-   /*
-    PmEnable(
-            SYSCTL_PERIPH_PWM1,
-            SYSCTL_PERIPH_GPIOF,
-            GPIO_PF2_M1PWM6,
-            GPIO_PORTF_BASE,
-            GPIO_PIN_2,
-            PWM1_BASE,
-            PWM_GEN_3,
-            PWM_OUT_6_BIT
-            );
-            */
-    PmEnable(
-            SYSCTL_PERIPH_PWM1,
-            SYSCTL_PERIPH_GPIOF,
-            GPIO_PF2_M1PWM6,
-            GPIO_PORTF_BASE,
-            GPIO_PIN_2 ,
-            PWM1_BASE,
-            PWM_GEN_3,
-            PWM_OUT_6_BIT | PWM_OUT_7_BIT
-            );
-
-}
-
-void PwmGenerator::PmEnable(
-        uint32_t periph_pwm,
-        uint32_t periph_gpio,
-        uint32_t gpio_pwm_pin,
-        uint32_t gpio_base,
-        uint32_t gpio_pin,
-        uint32_t pwm_base,
-        uint32_t pwm_gen,
-        uint32_t pwm_out_bit
-       )
-{
-    // The PWM peripheral must be enabled for use.
-    SysCtlPeripheralEnable (periph_pwm); //SYSCTL_PERIPH_PWM0);
-    // For this example PWM0 is used with PortB Pin6.  The actual port and
-    // pins used may be different on your part, consult the data sheet for
-    // more information.
-    // GPIO port B needs to be enabled so these pins can be used.
-    SysCtlPeripheralEnable (periph_gpio); //SYSCTL_PERIPH_GPIOB);
-    // Configure the GPIO pin muxing to select PWM00 functions for these pins.
-    // This step selects which alternate function is available for these pins.
-    // This is necessary if your part supports GPIO pin function muxing.
-    // Consult the data sheet to see which functions are allocated per pin.
-    GPIOPinConfigure (gpio_pwm_pin); //GPIO_PB6_M0PWM0);
-
-
-    GPIOPinConfigure (GPIO_PF3_M1PWM7); //GPIO_PB6_M0PWM0);
-
-
-    // Configure the PWM function for this pin.
-    // Consult the data sheet to see which functions are allocated per pin.
-    GPIOPinTypePWM(gpio_base, gpio_pin); //GPIO_PORTB_BASE, GPIO_PIN_6);
-
-
-    GPIOPinTypePWM(gpio_base, GPIO_PIN_3); //GPIO_PORTB_BASE, GPIO_PIN_6);
-
-
-    // Configure the PWM0 to count up/down without synchronization.
-    PWMGenConfigure(pwm_base, pwm_gen, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
-    // Set the PWM period to 250Hz.  To calculate the appropriate parameter
-    // use the following equation: N = (1 / f) * SysClk.  Where N is the
-    // function parameter, f is the desired frequency, and SysClk is the
-    // system clock frequency.
-    // In this case you get: (1 / 250Hz) * 16MHz = 64000 cycles.  Note that
-    // the maximum period you can set is 2^16.
-    PWMGenPeriodSet(pwm_base, pwm_gen, 64000);
+    SysCtlPeripheralEnable(p_conf->m_periph_pwm);
+    SysCtlPeripheralEnable(p_conf->m_periph_gpio);
+    GPIOPinConfigure(p_conf->m_gpio_pwm_pin);
+    GPIOPinTypePWM(p_conf->m_gpio_base, p_conf->m_gpio_pin);
+    PWMGenConfigure(p_conf->m_pwm_base, p_conf->m_pwm_gen, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
+    PWMGenPeriodSet(p_conf->m_pwm_base, p_conf->m_pwm_gen, 64000);
     SetPulseWidth(10);
-    // Enable the PWM0 Bit0 (PD0) output signal.
-    PWMOutputState(pwm_base, pwm_out_bit, true);
-    // Enable the PWM generator block.
-    PWMGenEnable(pwm_base, pwm_gen);
+    PWMOutputState(p_conf->m_pwm_base, p_conf->m_pwm_out_bit, true);
+    PWMGenEnable(p_conf->m_pwm_base, p_conf->m_pwm_gen);
 }

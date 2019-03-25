@@ -8,10 +8,12 @@
 #ifndef PWMGENERATOR_H_
 #define PWMGENERATOR_H_
 
+#include <string>
+
 class PwmGenerator
 {
 public:
-    PwmGenerator();
+    PwmGenerator(const std::string& m_name);
     virtual ~PwmGenerator();
     void Initialize();
     void Enable();
@@ -20,6 +22,7 @@ public:
 private:
     void PmEnable(uint32_t periph_pwm, uint32_t periph_gpio, uint32_t gpio_pwm_pin, uint32_t gpio_base,
                   uint32_t gpio_pin, uint32_t pwm_base, uint32_t pwm_gen, uint32_t pwm_out_bit);
+
 };
 
 #endif /* PWMGENERATOR_H_ */
