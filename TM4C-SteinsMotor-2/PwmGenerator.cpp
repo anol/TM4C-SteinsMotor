@@ -51,6 +51,7 @@ PwmGenerator::PwmGenerator(const std::string& name)
         if (0 == name.compare(Configurations[gpc].m_tag))
         {
             p_conf = &Configurations[gpc];
+            break;
         }
     }
 }

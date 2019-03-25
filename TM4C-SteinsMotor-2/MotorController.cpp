@@ -26,7 +26,7 @@ MotorController::~MotorController()
 
 int MotorController::Start(float target, bool flag)
 {
-    pulsCounter.Initialize();
+//    pulsCounter.Initialize();
     pwmGenerator.Initialize();
     pwmGenerator.Enable();
     pwmGenerator.Invert(flag);
@@ -53,7 +53,7 @@ float MotorController::GetElapsedMilliseconds()
 
 uint32_t MotorController::GetAntallPulser()
 {
-    uint32_t new_count = pulsCounter.GetCount();
+    uint32_t new_count = 1; //pulsCounter.GetCount();
     uint32_t antall = new_count - old_count;
     old_count = new_count;
     return antall;
