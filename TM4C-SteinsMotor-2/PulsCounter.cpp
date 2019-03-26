@@ -13,11 +13,7 @@
 #include "driverlib/timer.h"
 #include "driverlib/sysctl.h"
 #include <PulsCounter.h>
-
-// PD0 - WT2CCP0 - A
-// PD1 - WT2CCP1 - B
-// PB6 - T0CCP0 - A
-// PB7 - T0CCP1 - B
+#include "uartstdio.h"
 
 class CounterConfiguration
 {
@@ -40,11 +36,16 @@ public:
     uint32_t m_timer_cfg;
 };
 
+// TIMER_CFG_A_CAP_COUNT - Half-width edge count capture
+// TIMER_CFG_A_CAP_COUNT_UP - Half-width edge count capture that counts up
+// TIMER_CFG_A_CAP_TIME - Half-width edge time capture
+// TIMER_CFG_A_CAP_TIME_UP - Half-width edge time capture that counts up
+
 const CounterConfiguration Configurations[] =
 {
 { "PD0", SYSCTL_PERIPH_WTIMER2, SYSCTL_PERIPH_GPIOD, GPIO_PD0_WT2CCP0, GPIO_PORTD_BASE, GPIO_PIN_0, WTIMER2_BASE, TIMER_A, TIMER_CFG_A_CAP_COUNT },
   { "PD1", SYSCTL_PERIPH_WTIMER2, SYSCTL_PERIPH_GPIOD, GPIO_PD1_WT2CCP1, GPIO_PORTD_BASE, GPIO_PIN_1, WTIMER2_BASE, TIMER_B, TIMER_CFG_B_CAP_COUNT },
-  { "PB6", SYSCTL_PERIPH_TIMER0, SYSCTL_PERIPH_GPIOB, GPIO_PB6_T0CCP0, GPIO_PORTB_BASE, GPIO_PIN_6, TIMER0_BASE, TIMER_A, TIMER_CFG_A_CAP_COUNT },
+  { "PB6", SYSCTL_PERIPH_TIMER0, SYSCTL_PERIPH_GPIOB, GPIO_PB6_T0CCP0, GPIO_PORTB_BASE, GPIO_PIN_6, TIMER0_BASE, TIMER_A, TIMER_CFG_A_CAP_COUNT_UP },
   { "PB7", SYSCTL_PERIPH_TIMER0, SYSCTL_PERIPH_GPIOB, GPIO_PB7_T0CCP1, GPIO_PORTB_BASE, GPIO_PIN_7, TIMER0_BASE, TIMER_B, TIMER_CFG_B_CAP_COUNT } };
 
 const CounterConfiguration* p_puls = 0;
@@ -75,6 +76,9 @@ void PulsCounter::Initialize()
     TimerControlEvent(p_puls->m_timer_base, p_puls->m_timer_gen, TIMER_EVENT_BOTH_EDGES);
     TimerEnable(p_puls->m_timer_base, p_puls->m_timer_gen);
 }
-uint32_t PulsCounter::GetCount(){
-    return TimerValueGet(p_puls->m_timer_base, p_puls->m_timer_gen);
+uint32_t PulsCounter::GetCount()
+{
+    uint32_t count = TimerValueGet(p_puls->m_timer_base, p_puls->m_timer_gen);
+    UARTprintf("C=%d\n", count);
+    return count;
 }

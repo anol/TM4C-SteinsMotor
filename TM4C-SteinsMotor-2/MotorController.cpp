@@ -14,21 +14,22 @@
 #include <MotorController.h>
 
 MotorController::MotorController(System& system, Console& console) :
-        pid(), system(system), console(console), pwmGenerator("Drive"), pulsCounter("PD1")
+        pid(), system(system), console(console), pwmGenerator("PD0"), pulsCounter("PB6")
 {
 
 }
-
 MotorController::~MotorController()
 {
 
 }
-
-int MotorController::Start(float target, bool flag)
+void MotorController::Initialize()
 {
     pulsCounter.Initialize();
     pwmGenerator.Initialize();
     pwmGenerator.Enable();
+}
+int MotorController::Start(float target, bool flag)
+{
     pwmGenerator.Invert(flag);
     GetAntallPulser();
     GetElapsedMilliseconds();
@@ -38,27 +39,23 @@ int MotorController::Start(float target, bool flag)
         float dt = GetElapsedMilliseconds();
         float spenningUt = pid.Input(error, dt);
         SetSpenningUt(spenningUt);
-        console.Print(".");
         system.Sleep(100);
     }
     SetSpenningUt(0.0);
     return 0;
 }
-
 float MotorController::GetElapsedMilliseconds()
 {
     float dt = 1;
     return dt;
 }
-
 uint32_t MotorController::GetAntallPulser()
 {
-    uint32_t new_count = 1; //pulsCounter.GetCount();
+    uint32_t new_count = pulsCounter.GetCount();
     uint32_t antall = new_count - old_count;
     old_count = new_count;
     return antall;
 }
-
 void MotorController::SetSpenningUt(float spenning)
 {
 }

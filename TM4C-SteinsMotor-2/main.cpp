@@ -51,6 +51,7 @@ int main(void)
     MotorController motor(system, console);
     console.Initialize();
     console.Print("Steins motor\n");
+    motor.Initialize();
     while (1)
     {
         console.Print("Normal\n");

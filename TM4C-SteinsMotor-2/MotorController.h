@@ -16,6 +16,7 @@ class MotorController
 public:
     MotorController(System& system, Console& console);
     virtual ~MotorController();
+    void Initialize();
     int Start(float target, bool flag);
     float GetElapsedMilliseconds();
     uint32_t GetAntallPulser();
