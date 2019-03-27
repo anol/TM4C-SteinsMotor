@@ -14,7 +14,7 @@
 #include <MotorController.h>
 
 MotorController::MotorController(System& system, Console& console) :
-        pid(), system(system), console(console), pwmGenerator("PD0"), pulsCounter("PB6")
+        pid(), system(system), console(console), pwmGenerator("Green"), pulsCounter("PB6")
 {
 
 }
@@ -26,14 +26,14 @@ void MotorController::Initialize()
 {
     pulsCounter.Initialize();
     pwmGenerator.Initialize();
-    pwmGenerator.Enable();
 }
 int MotorController::Start(float target, bool flag)
 {
+    pwmGenerator.SetPulseWidth(30);
     pwmGenerator.Invert(flag);
     GetAntallPulser();
     GetElapsedMilliseconds();
-    for (uint32_t count = 0; count < 20; count++)
+    for (uint32_t count = 0; count < 100; count++)
     {
         float error = target - GetAntallPulser();
         float dt = GetElapsedMilliseconds();

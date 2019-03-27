@@ -57,17 +57,21 @@ PwmGenerator::PwmGenerator(const std::string& name)
             break;
         }
     }
+    SysCtlPeripheralEnable(p_conf->m_periph_pwm);
+    SysCtlPeripheralEnable(p_conf->m_periph_gpio);
 }
 PwmGenerator::~PwmGenerator()
 {
-    // TODO Auto-generated destructor stub
 }
 void PwmGenerator::Initialize()
 {
-    // Set the clocking to run directly from the external crystal/oscillator.
-    SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
-    // Set the PWM clock to the system clock.
-    SysCtlPWMClockSet (SYSCTL_PWMDIV_1);
+    GPIOPinConfigure(p_conf->m_gpio_pwm_pin);
+    GPIOPinTypePWM(p_conf->m_gpio_base, p_conf->m_gpio_pin);
+    PWMGenConfigure(p_conf->m_pwm_base, p_conf->m_pwm_gen, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
+    PWMGenPeriodSet(p_conf->m_pwm_base, p_conf->m_pwm_gen, 64000);
+    PWMPulseWidthSet(p_conf->m_pwm_base, p_conf->m_pwm_out_bit, 0);
+    PWMOutputState(p_conf->m_pwm_base, p_conf->m_pwm_out_bit, true);
+    PWMGenEnable(p_conf->m_pwm_base, p_conf->m_pwm_gen);
 }
 void PwmGenerator::Invert(bool invert)
 {
@@ -80,13 +84,4 @@ void PwmGenerator::SetPulseWidth(int percent)
 }
 void PwmGenerator::Enable()
 {
-    SysCtlPeripheralEnable(p_conf->m_periph_pwm);
-    SysCtlPeripheralEnable(p_conf->m_periph_gpio);
-    GPIOPinConfigure(p_conf->m_gpio_pwm_pin);
-    GPIOPinTypePWM(p_conf->m_gpio_base, p_conf->m_gpio_pin);
-    PWMGenConfigure(p_conf->m_pwm_base, p_conf->m_pwm_gen, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
-    PWMGenPeriodSet(p_conf->m_pwm_base, p_conf->m_pwm_gen, 64000);
-    SetPulseWidth(10);
-    PWMOutputState(p_conf->m_pwm_base, p_conf->m_pwm_out_bit, true);
-    PWMGenEnable(p_conf->m_pwm_base, p_conf->m_pwm_gen);
 }

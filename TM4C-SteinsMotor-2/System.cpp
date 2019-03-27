@@ -22,6 +22,10 @@ System::System()
     FPULazyStackingEnable();
     // Set the clocking to run directly from the crystal.
     SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
+//    // Set the clocking to run directly from the external crystal/oscillator.
+//    SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+    // Set the PWM clock to the system clock.
+    SysCtlPWMClockSet(SYSCTL_PWMDIV_1);
 }
 
 System::~System()
