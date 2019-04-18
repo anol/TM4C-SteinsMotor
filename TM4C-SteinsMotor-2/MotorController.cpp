@@ -12,9 +12,10 @@
 #include <PwmGenerator.h>
 #include <PidController.h>
 #include <MotorController.h>
+#include "uartstdio.h"
 
 MotorController::MotorController(System& system, Console& console) :
-        pid(), system(system), console(console), pwmGenerator("Green"), pulsCounter("PB6")
+        pid(), system(system), console(console), pwmGenerator("Blue"), pulsCounter("PB5")
 {
 
 }
@@ -54,6 +55,10 @@ uint32_t MotorController::GetAntallPulser()
     uint32_t new_count = pulsCounter.GetCount();
     uint32_t antall = new_count - old_count;
     old_count = new_count;
+    if (0 < antall)
+    {
+        UARTprintf("A=%d\n", antall);
+    }
     return antall;
 }
 void MotorController::SetSpenningUt(float spenning)

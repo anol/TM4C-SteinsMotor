@@ -47,6 +47,7 @@ const CounterConfiguration Configurations[] =
   { "PD1", SYSCTL_PERIPH_WTIMER2, SYSCTL_PERIPH_GPIOD, GPIO_PD1_WT2CCP1, GPIO_PORTD_BASE, GPIO_PIN_1, WTIMER2_BASE, TIMER_B, TIMER_CFG_B_CAP_COUNT_UP },
   { "PF0", SYSCTL_PERIPH_TIMER0, SYSCTL_PERIPH_GPIOF, GPIO_PF0_T0CCP0, GPIO_PORTF_BASE, GPIO_PIN_0, TIMER0_BASE, TIMER_A, TIMER_CFG_A_CAP_COUNT_UP },
   { "PF4", SYSCTL_PERIPH_TIMER2, SYSCTL_PERIPH_GPIOF, GPIO_PF4_T2CCP0, GPIO_PORTF_BASE, GPIO_PIN_4, TIMER2_BASE, TIMER_A, TIMER_CFG_A_CAP_COUNT_UP },
+  { "PB5", SYSCTL_PERIPH_TIMER1, SYSCTL_PERIPH_GPIOB, GPIO_PB5_T1CCP1, GPIO_PORTB_BASE, GPIO_PIN_5, TIMER1_BASE, TIMER_B, TIMER_CFG_B_CAP_COUNT_UP },
   { "PB6", SYSCTL_PERIPH_TIMER0, SYSCTL_PERIPH_GPIOB, GPIO_PB6_T0CCP0, GPIO_PORTB_BASE, GPIO_PIN_6, TIMER0_BASE, TIMER_A, TIMER_CFG_A_CAP_COUNT_UP },
   { "PB7", SYSCTL_PERIPH_TIMER0, SYSCTL_PERIPH_GPIOB, GPIO_PB7_T0CCP1, GPIO_PORTB_BASE, GPIO_PIN_7, TIMER0_BASE, TIMER_B, TIMER_CFG_B_CAP_COUNT_UP } };
 
@@ -76,15 +77,14 @@ void PulsCounter::Initialize()
     GPIOPadConfigSet(p_puls->m_gpio_base, p_puls->m_gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
     TimerConfigure(p_puls->m_timer_base, (p_puls->m_timer_cfg | TIMER_CFG_SPLIT_PAIR));
     TimerControlEvent(p_puls->m_timer_base, p_puls->m_timer_gen, TIMER_EVENT_BOTH_EDGES);
-    TimerLoadSet(p_puls->m_timer_base, p_puls->m_timer_gen, 0xFFFF);
-    TimerPrescaleSet(p_puls->m_timer_base, p_puls->m_timer_gen, 0xFF);
-    TimerMatchSet(p_puls->m_timer_base, p_puls->m_timer_gen, 0xFFFE);
-    TimerPrescaleMatchSet(p_puls->m_timer_base, p_puls->m_timer_gen, 0xFE);
+//    TimerLoadSet(p_puls->m_timer_base, p_puls->m_timer_gen, 0xFFFF);
+//    TimerPrescaleSet(p_puls->m_timer_base, p_puls->m_timer_gen, 0xFF);
+//    TimerMatchSet(p_puls->m_timer_base, p_puls->m_timer_gen, 0xFFFE);
+//    TimerPrescaleMatchSet(p_puls->m_timer_base, p_puls->m_timer_gen, 0xFE);
     TimerEnable(p_puls->m_timer_base, p_puls->m_timer_gen);
 }
 uint32_t PulsCounter::GetCount()
 {
     uint32_t count = TimerValueGet(p_puls->m_timer_base, p_puls->m_timer_gen);
-    UARTprintf("C=%d\n", count);
     return count;
 }
