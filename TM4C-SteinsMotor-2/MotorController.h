@@ -23,6 +23,7 @@ public:
     void SetSpenningUt(float spenning);
 private:
     uint32_t old_count;
+    uint32_t old_pwm;
     PidController pid;
     System& system;
     Console& console;

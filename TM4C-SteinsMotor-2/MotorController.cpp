@@ -15,7 +15,7 @@
 #include "uartstdio.h"
 
 MotorController::MotorController(System& system, Console& console) :
-        pid(), system(system), console(console), pwmGenerator("Blue"), pulsCounter("PB5")
+        old_count(0), old_pwm(0), pid(), system(system), console(console), pwmGenerator("PD0"), pulsCounter("PB5")
 {
 
 }
@@ -30,17 +30,17 @@ void MotorController::Initialize()
 }
 int MotorController::Start(float target, bool flag)
 {
-    pwmGenerator.SetPulseWidth(30);
+    pwmGenerator.SetPulseWidth(40);
     pwmGenerator.Invert(flag);
     GetAntallPulser();
     GetElapsedMilliseconds();
-    for (uint32_t count = 0; count < 100; count++)
+    for (uint32_t count = 0; count < 10; count++)
     {
         float error = target - GetAntallPulser();
         float dt = GetElapsedMilliseconds();
         float spenningUt = pid.Input(error, dt);
         SetSpenningUt(spenningUt);
-        system.Sleep(100);
+        system.Sleep(1000);
     }
     SetSpenningUt(0.0);
     return 0;
@@ -63,4 +63,10 @@ uint32_t MotorController::GetAntallPulser()
 }
 void MotorController::SetSpenningUt(float spenning)
 {
+    uint32_t pwm = int(spenning);
+    if (old_pwm != pwm)
+    {
+        UARTprintf("P=%d\n", pwm);
+        old_pwm = pwm;
+    }
 }
